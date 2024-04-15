@@ -738,13 +738,13 @@ class PipePredictor(object):
         print(parent_directory)
 
         csv_path = video_file.split(os.sep)
-        csv_path = os.path.join(csv_path[:-3], 'csv_files', csv_path[-1].split('.')[0] + '.csv')
+        csv_path = os.path.join(os.sep.join(csv_path[:-3]), 'csv_files', os.sep.join(csv_path[-1].split('.')[0] + '.csv'))
         print(f'[DEBUG] CSV path is: {csv_path}')
         with open(csv_path, 'w', newline='') as csvfile:
             fieldnames = ['frame_id', 'target_id', 'xmin', 'ymin', 'xmax', 'ymax']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
-            
+
             while not framequeue.empty():
                 if frame_id % 10 == 0:
                     print('Thread: {}; frame id: {}'.format(thread_idx, frame_id))
