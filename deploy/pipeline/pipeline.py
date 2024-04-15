@@ -742,8 +742,8 @@ class PipePredictor(object):
         print(f'[DEBUG] CSV path is: {csv_path}')
         with open(csv_path, 'w', newline='') as csvfile:
             fieldnames = ['frame_id', 'target_id', 'xmin', 'ymin', 'xmax', 'ymax']
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            writer.writeheader()
+            dict_writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            dict_writer.writeheader()
 
             while not framequeue.empty():
                 if frame_id % 10 == 0:
@@ -837,7 +837,7 @@ class PipePredictor(object):
                         bbox = box[2:]
                         if len(bbox) == 5 and score >= 0.4:
                             _, xmin, ymin, xmax, ymax = bbox
-                            writer.writerow({
+                            dict_writer.writerow({
                                 'frame_id': frame_id + 1,
                                 'target_id': person_id,  # Assuming person_id is the target_id
                                 'mask': 0,
