@@ -838,7 +838,7 @@ class PipePredictor(object):
                         if len(bbox) == 5 and score >= 0.4:
                             _, xmin, ymin, xmax, ymax = bbox
                             dict_writer.writerow({
-                                'frame_id': frame_id + 1,
+                                'frame_id': frame_id,
                                 'target_id': person_id,  # Assuming person_id is the target_id
                                 'mask': 0,
                                 'x': xmin,
