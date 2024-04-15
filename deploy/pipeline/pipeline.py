@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import os
+import csv
 import yaml
 import glob
 import cv2
@@ -735,8 +736,15 @@ class PipePredictor(object):
         time.sleep(1)
         parent_directory = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
         print(parent_directory)
-        out_put_file = os.path.join(parent_directory, 'output.txt')
-        with open(out_put_file, 'w') as f:
+
+        csv_path = video_file.split(os.sep)
+        csv_path = os.path.join(csv_path[:-3], 'csv_files', csv_path[-1].split('.')[0] + '.csv')
+        print(f'[DEBUG] CSV path is: {csv_path}')
+        with open(csv_path, 'w', newline='') as csvfile:
+            fieldnames = ['frame_id', 'target_id', 'xmin', 'ymin', 'xmax', 'ymax']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            
             while not framequeue.empty():
                 if frame_id % 10 == 0:
                     print('Thread: {}; frame id: {}'.format(thread_idx, frame_id))
@@ -829,10 +837,15 @@ class PipePredictor(object):
                         bbox = box[2:]
                         if len(bbox) == 5 and score >= 0.4:
                             _, xmin, ymin, xmax, ymax = bbox
-                            f.write(
-                                str(person_id) + ', ' + str(frame_id) +
-                                ', ' + str(xmin) + ', ' + str(ymin) +
-                                ', ' + str(xmax) + ', ' + str(ymax) + '\n')
+                            writer.writerow({
+                                'frame_id': frame_id + 1,
+                                'target_id': person_id,  # Assuming person_id is the target_id
+                                'mask': 0,
+                                'x': xmin,
+                                'y': ymin,
+                                'w': xmax - xmin,
+                                'h': ymax - ymin
+                            })
 
                     self.pipeline_res.update(mot_res, 'mot')
                     crop_input, new_bboxes, ori_bboxes = crop_image_with_mot(
